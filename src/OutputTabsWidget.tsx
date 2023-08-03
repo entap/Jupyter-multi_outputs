@@ -20,10 +20,10 @@ export class OutputTabsWidget extends ReactWidget {
 
   render(): JSX.Element {
     return (
-      <UseSignal signal={this.cell.model.metadata.changed}>
+      <UseSignal signal={this.cell.model.metadataChanged}>
         {() => {
           const tabs = createTabs(this.cell);
-          const selectedIndex = getOutputTabIndex(this.cell.model.metadata);
+          const selectedIndex = getOutputTabIndex(this.cell.model);
           if (tabs.length > 1) {
             return <OutputTabs tabs={tabs} selectedIndex={selectedIndex} />;
           } else {
@@ -82,17 +82,17 @@ export function outputAreaWithPinButton(
 }
 
 function removePinnedOutput(cell: CodeCell, executionCount: number) {
-  const outputs = getPinnedOutputs(cell.model.metadata);
+  const outputs = getPinnedOutputs(cell.model);
   const index = outputs.findIndex(o => o.execution_count === executionCount);
   if (index < 0) {
     return;
   }
   outputs.splice(index, 1);
   // setだけだとなぜかmetadata.changedが発火されないので一旦削除して作り直す
-  resetPinnedOutputs(cell.model.metadata);
-  setPinnedOutputs(cell.model.metadata, outputs);
+  resetPinnedOutputs(cell.model);
+  setPinnedOutputs(cell.model, outputs);
 
-  console.debug('metadata:', getPinnedOutputs(cell.model.metadata));
+  console.debug('metadata:', getPinnedOutputs(cell.model));
 }
 
 function outputAreaWithMergeButton(
@@ -128,12 +128,12 @@ function createTabs(cell: CodeCell) {
       label: '*',
       outputNode: cell.outputArea.parent?.node
     },
-    ...getPinnedOutputs(cell.model.metadata)
+    ...getPinnedOutputs(cell.model)
       .map(output => {
         const outputArea = new OutputArea({
           model: new OutputAreaModel({
             values: output.outputs,
-            trusted: !!cell.model.metadata.get('trusted')
+            trusted: !!cell.model.getMetadata('trusted')
           }),
           rendermime: cell.outputArea.rendermime
         });
