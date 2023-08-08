@@ -57,10 +57,11 @@ export class PinButtonWidget extends ReactWidget {
 }
 
 function PinButton({ onClick }: { onClick: () => unknown }): JSX.Element {
+  //! Lib4.xでは上階層に"jp-OutputArea-promptOverlay"が追加されたため、z-indexを指定してボタンを押せるようにする
   return (
     <div className="multi-outputs-ui">
       <div className="buttons">
-        <button type="button" className="btn btn-default" onClick={onClick}>
+        <button type="button" className="btn btn-default" style={{position: 'relative', zIndex: 10000}} onClick={onClick}>
           <i className="fa fa-fw fa-thumb-tack" />
         </button>
       </div>
