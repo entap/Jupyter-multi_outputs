@@ -4,6 +4,7 @@ import { OutputTabs } from './components/OutputTabs';
 import { CodeCell } from '@jupyterlab/cells';
 import {
   getOutputTabIndex,
+  selectCurrentOutputTab,
   getPinnedOutputs,
   resetPinnedOutputs,
   setPinnedOutputs
@@ -21,8 +22,12 @@ export class OutputTabsWidget extends ReactWidget {
   render(): JSX.Element {
     return (
       <UseSignal signal={this.cell.model.metadataChanged}>
-        {() => {
+        {(_, args) => {
           const tabs = createTabs(this.cell);
+          if(args != null && args.key == "scrolled") {
+            // スクロールの変更の場合は最初のタブを選択状態にする
+            selectCurrentOutputTab(this.cell.model);
+          }
           const selectedIndex = getOutputTabIndex(this.cell.model);
           if (tabs.length > 1) {
             return <OutputTabs tabs={tabs} selectedIndex={selectedIndex} />;
